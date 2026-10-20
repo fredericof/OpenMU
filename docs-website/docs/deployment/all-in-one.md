@@ -104,3 +104,24 @@ select your desired game version, the number of game servers (just the data of
 it), and whether test accounts should be created. Click *Install*, wait a bit
 until the database is set up and filled with the data, and OpenMU is ready to
 use.
+
+## Google sign-in for the browser client
+
+To enable Google sign-in for a browser game client, set these environment
+variables on the `openmu-startup` service:
+
+| Variable | Value |
+| --- | --- |
+| `BrowserAuth__ClientId` | The Google Identity Services OAuth client ID for the web client. |
+| `BrowserAuth__AllowedOrigin` | The browser site's exact origin, including scheme and port, with no trailing slash. |
+
+For example, use `https://game.example.org` when the browser client is served
+from that origin. The configured origin must match the browser client's origin;
+mutating authentication requests without that exact `Origin` header are rejected.
+The browser session cookie is secure and requires HTTPS outside local testing.
+
+The first Google sign-in creates an OpenMU account with a generated 10-character
+login name. Existing password accounts are not linked by email. The browser
+client requests a short-lived, one-use login ticket and sends it as the password
+with the account name through the existing long-password login packet. Regular
+password logins continue to use the normal game login flow.

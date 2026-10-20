@@ -22,6 +22,13 @@ internal static class AccountExtensions
         builder.Property(account => account.LoginName).HasMaxLength(10).IsRequired();
         builder.HasIndex(account => account.LoginName).IsUnique();
 
+        builder.Property(account => account.GoogleSubject).HasMaxLength(255);
+        builder.HasIndex(account => account.GoogleSubject).IsUnique();
+        builder.Property(account => account.BrowserSessionTokenHash).HasMaxLength(64);
+        builder.HasIndex(account => account.BrowserSessionTokenHash).IsUnique();
+        builder.Property(account => account.BrowserLoginTicketHash).HasMaxLength(64);
+        builder.HasIndex(account => account.BrowserLoginTicketHash).IsUnique();
+
         builder.Property(account => account.LanguageIsoCode).HasMaxLength(3).IsRequired().HasDefaultValue("en");
     }
 }

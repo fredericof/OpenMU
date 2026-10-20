@@ -28,12 +28,30 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime?>("BrowserLoginTicketExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("BrowserLoginTicketHash")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<DateTime?>("BrowserSessionExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("BrowserSessionTokenHash")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
                     b.Property<DateTime?>("ChatBanUntil")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("EMail")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<string>("GoogleSubject")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
 
                     b.Property<bool>("IsBot")
                         .HasColumnType("boolean");
@@ -84,6 +102,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BrowserLoginTicketHash")
+                        .IsUnique();
+
+                    b.HasIndex("BrowserSessionTokenHash")
+                        .IsUnique();
+
+                    b.HasIndex("GoogleSubject")
+                        .IsUnique();
 
                     b.HasIndex("LoginName")
                         .IsUnique();

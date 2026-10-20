@@ -72,6 +72,31 @@ public class Account
     public string EMail { get; set; } = string.Empty;
 
     /// <summary>
+    /// Gets or sets the stable subject identifier of the linked Google account.
+    /// </summary>
+    public string? GoogleSubject { get; set; }
+
+    /// <summary>
+    /// Gets or sets the hash of the active browser session token.
+    /// </summary>
+    public string? BrowserSessionTokenHash { get; set; }
+
+    /// <summary>
+    /// Gets or sets the expiration time of the active browser session.
+    /// </summary>
+    public DateTime? BrowserSessionExpiresAt { get; set; }
+
+    /// <summary>
+    /// Gets or sets the hash of the active one-use browser login ticket.
+    /// </summary>
+    public string? BrowserLoginTicketHash { get; set; }
+
+    /// <summary>
+    /// Gets or sets the expiration time of the active browser login ticket.
+    /// </summary>
+    public DateTime? BrowserLoginTicketExpiresAt { get; set; }
+
+    /// <summary>
     /// Gets or sets the iso code (ISO 639-2/3) of the preferred language of the player.
     /// </summary>
     [DefaultValue("en")]

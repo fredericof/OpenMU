@@ -31,6 +31,11 @@ public class PlayerInMemoryContext : InMemoryContext, IPlayerContext
     /// <inheritdoc/>
     public async ValueTask<MUnique.OpenMU.DataModel.Entities.AccountState?> AuthenticateAsync(string loginName, string password, CancellationToken cancellationToken = default)
     {
+        if (password.StartsWith(BrowserAuthTokens.LoginTicketPrefix, StringComparison.Ordinal))
+        {
+            return null;
+        }
+
         var allAccounts = await this.Provider.GetRepository<Account>().GetAllAsync(cancellationToken).ConfigureAwait(false);
         var account = allAccounts.FirstOrDefault(a => a.LoginName == loginName && BCrypt.Net.BCrypt.Verify(password, a.PasswordHash));
         return account?.State;

@@ -331,6 +331,7 @@ internal sealed class Program : IDisposable
             .AddHostedService(provider => provider.GetService<GameServerContainer>()!)
             .AddHostedService(provider => provider.GetService<ConnectServerContainer>()!)
             .AddNetworkObservation()
+            .AddSingleton<BrowserAccountStore>()
             .AddControllers().AddApplicationPart(typeof(ServerController).Assembly);
 
         var host = builder.Build();
@@ -341,6 +342,11 @@ internal sealed class Program : IDisposable
         if (addAdminPanel)
         {
             host.ConfigureAdminPanel();
+        }
+        else
+        {
+            host.UseRouting();
+            host.MapControllers();
         }
 
         this._logger.Information("Starting host...");

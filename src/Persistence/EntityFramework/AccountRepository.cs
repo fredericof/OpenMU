@@ -131,6 +131,47 @@ internal class AccountRepository : CachingGenericRepository<Account>
     }
 
     /// <summary>
+    /// Consumes an unexpired, one-use browser login ticket.
+    /// </summary>
+    internal async ValueTask<DataModel.Entities.AccountState?> ConsumeLoginTicketAsync(
+        string loginName,
+        string ticketHash,
+        DateTime now,
+        CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        using var context = this.GetContext();
+        var account = await context.Context.Set<Account>()
+            .Where(candidate => candidate.LoginName == loginName
+                && candidate.BrowserLoginTicketHash == ticketHash
+                && candidate.BrowserLoginTicketExpiresAt > now
+                && candidate.BrowserSessionExpiresAt > now
+                && candidate.GoogleSubject != null)
+            .Select(candidate => new { candidate.Id, candidate.State })
+            .FirstOrDefaultAsync(cancellationToken)
+            .ConfigureAwait(false);
+        if (account is null)
+        {
+            return null;
+        }
+
+        var affected = await context.Context.Set<Account>()
+            .Where(candidate => candidate.Id == account.Id
+                && candidate.BrowserLoginTicketHash == ticketHash
+                && candidate.BrowserLoginTicketExpiresAt > now
+                && candidate.BrowserSessionExpiresAt > now
+                && candidate.GoogleSubject != null)
+            .ExecuteUpdateAsync(
+                setters => setters
+                    .SetProperty(candidate => candidate.BrowserLoginTicketHash, (string?)null)
+                    .SetProperty(candidate => candidate.BrowserLoginTicketExpiresAt, (DateTime?)null),
+                cancellationToken)
+            .ConfigureAwait(false);
+        return affected == 1 ? account.State : null;
+    }
+
+    /// <summary>
     /// Gets the account by login name.
     /// </summary>
     /// <param name="loginName">The login name.</param>

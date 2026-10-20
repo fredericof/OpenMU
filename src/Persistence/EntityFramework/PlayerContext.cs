@@ -56,6 +56,16 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
         {
             if (this.RepositoryProvider.GetRepository<Account, AccountRepository>() is { } accountRepository)
             {
+                if (password.StartsWith(BrowserAuthTokens.LoginTicketPrefix, StringComparison.Ordinal))
+                {
+                    if (!BrowserAuthTokens.TryHashLoginTicket(password, out var ticketHash))
+                    {
+                        return null;
+                    }
+
+                    return await accountRepository.ConsumeLoginTicketAsync(loginName, ticketHash, DateTime.UtcNow, cancellationToken).ConfigureAwait(false);
+                }
+
                 return await accountRepository.AuthenticateAsync(loginName, password, cancellationToken).ConfigureAwait(false);
             }
         }
